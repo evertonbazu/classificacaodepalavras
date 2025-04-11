@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classificação de Palavras</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    .options button {
+      margin: 5px;
+      padding: 10px 20px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      font-size: 1em;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .options button:hover {
+      background-color: #0056b3;
+    }
+    .feedback {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .vidas {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+    .proxima {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .proxima:hover {
+      background-color: #218838;
+    }
+    .reiniciar {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #ffc107;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .reiniciar:hover {
+      background-color: #e0a800;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Classificação de Palavras</h1>
+    <div class="question" id="question"></div>
+    <div class="options">
+      <button onclick="responder('oxítona')">Oxítona</button>
+      <button onclick="responder('paroxítona')">Paroxítona</button>
+      <button onclick="responder('proparoxítona')">Proparoxítona</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div class="vidas">
+      <div>Vidas Restantes:</div>
+      <div id="vidas">❤️❤️❤️</div>
+    </div>
+    <button class="proxima" onclick="proximaQuestao()" id="btnProxima">Próxima</button>
+    <button class="reiniciar" onclick="iniciarJogo()" id="btnReiniciar" style="display:none;">Reiniciar Jogo</button>
+  </div>
+
+  <script>
+    const frases = [
+      // 25 frases com palavras oxítonas
+      { frase: "Ele chegou no café às dez horas.", palavra: "café", classificacao: "oxítona" },
+      { frase: "Gostei do sabor do açaí.", palavra: "açaí", classificacao: "oxítona" },
+      { frase: "Ela falou com o jacaré.", palavra: "jacaré", classificacao: "oxítona" },
+      { frase: "Comi um bom purê.", palavra: "purê", classificacao: "oxítona" },
+      { frase: "Meu avô viajou ontem.", palavra: "avô", classificacao: "oxítona" },
+      { frase: "O bebê dormiu tranquilo.", palavra: "bebê", classificacao: "oxítona" },
+      { frase: "Levei um susto com o metrô.", palavra: "metrô", classificacao: "oxítona" },
+      { frase: "Vou ao balé esta noite.", palavra: "balé", classificacao: "oxítona" },
+      { frase: "Ele gosta de chulé.", palavra: "chulé", classificacao: "oxítona" },
+      { frase: "Ganhei um boné novo.", palavra: "boné", classificacao: "oxítona" },
+      { frase: "O café acabou.", palavra: "acabou", classificacao: "oxítona" },
+      { frase: "Assisti um filé excelente.", palavra: "filé", classificacao: "oxítona" },
+      { frase: "Ele me chamou de ladrão.", palavra: "ladrão", classificacao: "oxítona" },
+      { frase: "A chuva caiu de repente.", palavra: "caiu", classificacao: "oxítona" },
+      { frase: "Vamos ao salão amanhã.", palavra: "salão", classificacao: "oxítona" },
+      { frase: "Ganhei um violão.", palavra: "violão", classificacao: "oxítona" },
+      { frase: "O professor sorriu.", palavra: "sorriu", classificacao: "oxítona" },
+      { frase: "Estava no caminhão.", palavra: "caminhão", classificacao: "oxítona" },
+      { frase: "Comprei pão.", palavra: "pão", classificacao: "oxítona" },
+      { frase: "Vi um avião voando.", palavra: "avião", classificacao: "oxítona" },
+      { frase: "Ele é um campeão.", palavra: "campeão", classificacao: "oxítona" },
+      { frase: "Esse é meu cordão.", palavra: "cordão", classificacao: "oxítona" },
+      { frase: "O botão quebrou.", palavra: "botão", classificacao: "oxítona" },
+      { frase: "Fiz um sabão artesanal.", palavra: "sabão", classificacao: "oxítona" },
+      { frase: "O fogão está limpo.", palavra: "fogão", classificacao: "oxítona" },
+
+      // 25 frases com palavras paroxítonas
+      { frase: "Ganhei uma camisa nova.", palavra: "camisa", classificacao: "paroxítona" },
+      { frase: "Ele gosta de música.", palavra: "música", classificacao: "paroxítona" },
+      { frase: "Vamos à escola.", palavra: "escola", classificacao: "paroxítona" },
+      { frase: "A aluna estudou muito.", palavra: "aluna", classificacao: "paroxítona" },
+      { frase: "O cachorro latiu.", palavra: "cachorro", classificacao: "paroxítona" },
+      { frase: "Visitamos o cinema.", palavra: "cinema", classificacao: "paroxítona" },
+      { frase: "O menino é artista.", palavra: "artista", classificacao: "paroxítona" },
+      { frase: "A garota é simpática.", palavra: "simpática", classificacao: "paroxítona" },
+      { frase: "Eles gostam de batata.", palavra: "batata", classificacao: "paroxítona" },
+      { frase: "A janela está aberta.", palavra: "janela", classificacao: "paroxítona" },
+      { frase: "Comprei uma caneta.", palavra: "caneta", classificacao: "paroxítona" },
+      { frase: "Fui ao dentista.", palavra: "dentista", classificacao: "paroxítona" },
+      { frase: "O poeta escreveu um livro.", palavra: "poeta", classificacao: "paroxítona" },
+      { frase: "Ela tem uma mochila azul.", palavra: "mochila", classificacao: "paroxítona" },
+      { frase: "Meu primo é atleta.", palavra: "atleta", classificacao: "paroxítona" },
+      { frase: "A cebola estava doce.", palavra: "cebola", classificacao: "paroxítona" },
+      { frase: "Gostei da cadeira.", palavra: "cadeira", classificacao: "paroxítona" },
+      { frase: "Comprei uma blusa.", palavra: "blusa", classificacao: "paroxítona" },
+      { frase: "Vamos visitar a vizinha.", palavra: "vizinha", classificacao: "paroxítona" },
+      { frase: "O aluno tirou boa nota.", palavra: "aluno", classificacao: "paroxítona" },
+      { frase: "Minha avó fez pamonha.", palavra: "pamonha", classificacao: "paroxítona" },
+      { frase: "O cinema estava cheio.", palavra: "cinema", classificacao: "paroxítona" },
+      { frase: "Ganhei um presente.", palavra: "presente", classificacao: "paroxítona" },
+      { frase: "Ele é um poeta.", palavra: "poeta", classificacao: "paroxítona" },
+      { frase: "Comi uma banana.", palavra: "banana", classificacao: "paroxítona" },
+
+      // 25 frases com palavras proparoxítonas
+      { frase: "Ele tem uma lâmpada quebrada.", palavra: "lâmpada", classificacao: "proparoxítona" },
+      { frase: "A médica chegou cedo.", palavra: "médica", classificacao: "proparoxítona" },
+      { frase: "Compramos abóbora no mercado.", palavra: "abóbora", classificacao: "proparoxítona" },
+      { frase: "A árvore caiu na estrada.", palavra: "árvore", classificacao: "proparoxítona" },
+      { frase: "Gosto de matemática.", palavra: "matemática", classificacao: "proparoxítona" },
+      { frase: "Ele fez a análise do texto.", palavra: "análise", classificacao: "proparoxítona" },
+      { frase: "Ela é ótima no que faz.", palavra: "ótima", classificacao: "proparoxítona" },
+      { frase: "A música era melódica.", palavra: "melódica", classificacao: "proparoxítona" },
+      { frase: "Meu pai é um físico renomado.", palavra: "físico", classificacao: "proparoxítona" },
+      { frase: "Estudei a fórmula química.", palavra: "química", classificacao: "proparoxítona" },
+      { frase: "A fábrica fechou.", palavra: "fábrica", classificacao: "proparoxítona" },
+      { frase: "O sábado foi animado.", palavra: "sábado", classificacao: "proparoxítona" },
+      { frase: "Comi chocolate com framboesa.", palavra: "chocolate", classificacao: "proparoxítona" },
+      { frase: "Estava com cárie no dente.", palavra: "cárie", classificacao: "proparoxítona" },
+      { frase: "Ele é um mágico talentoso.", palavra: "mágico", classificacao: "proparoxítona" },
+      { frase: "Vi uma câmera escondida.", palavra: "câmera", classificacao: "proparoxítona" },
+      { frase: "Ele gosta de música clássica.", palavra: "clássica", classificacao: "proparoxítona" },
+      { frase: "Minha vó é pálida.", palavra: "pálida", classificacao: "proparoxítona" },
+      { frase: "O médico é simpático.", palavra: "simpático", classificacao: "proparoxítona" },
+      { frase: "Fiz uma crítica construtiva.", palavra: "crítica", classificacao: "proparoxítona" },
+      { frase: "A lâmpada queimou.", palavra: "lâmpada", classificacao: "proparoxítona" },
+      { frase: "O cálculo estava correto.", palavra: "cálculo", classificacao: "proparoxítona" },
+      { frase: "Foi uma tática ousada.", palavra: "tática", classificacao: "proparoxítona" },
+      { frase: "Ele tem lógica.", palavra: "lógica", classificacao: "proparoxítona" },
+      { frase: "A réplica do navio é perfeita.", palavra: "réplica", classificacao: "proparoxítona" }
+    ];
+
+    let questoes = [];
+    let indice = 0;
+    let vidas = 3;
+    let acertos = 0;
+
+    function embaralhar(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function iniciarJogo() {
+      embaralhar(frases);
+      questoes = frases.slice(0, 10);
+      indice = 0;
+      vidas = 3;
+      acertos = 0;
+      atualizarVidas();
+      mostrarQuestao();
+      document.querySelector('.options').style.display = 'block';
+      document.getElementById('btnProxima').style.display = 'none';
+      document.getElementById('btnReiniciar').style.display = 'none';
+    }
+
+    function mostrarQuestao() {
+      if (indice >= questoes.length || vidas <= 0) {
+        encerrarJogo();
+        return;
+      }
+      const q = questoes[indice];
+      document.getElementById('question').innerText = `${q.frase}\n\nQual a classificação da palavra "${q.palavra}"?`;
+      document.getElementById('feedback').innerText = '';
+      document.getElementById('btnProxima').style.display = 'none';
+    }
+
+    function responder(resposta) {
+      const q = questoes[indice];
+      if (resposta === q.classificacao) {
+        document.getElementById('feedback').innerText = '✅ Parabéns! Você acertou!';
+        acertos++;
+      } else {
+        document.getElementById('feedback').innerText = `❌ Você errou. A palavra "${q.palavra}" é uma ${q.classificacao} porque a sílaba tônica está ${
+          q.classificacao === 'oxítona' ? 'na última sílaba' : q.classificacao === 'paroxítona' ? 'na penúltima sílaba' : 'na antepenúltima sílaba'
+        }.`;
+        vidas--;
+        atualizarVidas();
+      }
+      document.getElementById('btnProxima').style.display = 'inline-block';
+    }
+
+    function atualizarVidas() {
+      document.getElementById('vidas').innerText = '❤️'.repeat(vidas);
+    }
+
+    function proximaQuestao() {
+      indice++;
+      mostrarQuestao();
+    }
+
+    function encerrarJogo() {
+      let mensagem = '';
+      if (vidas <= 0) {
+        mensagem = `😢 Fim de jogo! Você acertou ${acertos} de 10 questões.`;
+      } else {
+        mensagem = `🎉 Parabéns! Você concluiu o jogo com ${acertos} acertos.`;
+      }
+      document.getElementById('question').innerText = mensagem;
+      document.querySelector('.options').style.display = 'none';
+      document.getElementById('btnProxima').style.display = 'none';
+      document.getElementById('btnReiniciar').style.display = 'inline-block';
+    }
+
+    iniciarJogo();
+  </script>
+</body>
+</html>
